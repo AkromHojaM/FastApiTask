@@ -33,6 +33,7 @@ def generate_token(user_id:int):
     payload_access = {
         'type':'access',
         'exp':datetime.utcnow() + timedelta(minutes=30),
+        'user_id':user_id,
         'jti':jti_access
     }
 

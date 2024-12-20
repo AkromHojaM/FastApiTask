@@ -10,8 +10,8 @@ from data.databse import get_async_session
 from sqlalchemy.ext.asyncio import AsyncSession
 from models.models import User
 from fastapi import APIRouter,Depends,HTTPException
-from .schemes import RegisterUser,UserInDb
-
+from .schemes import RegisterUser, UserInDb, UserLogin
+from .utils import generate_token
 
 load_dotenv()
 user = APIRouter()
@@ -42,3 +42,20 @@ async def register_user(model:RegisterUser,
     await session.commit()
     return {"success":True,"username":model.username,"email":model.email,
             "Data":"User Registred Successfully"}
+
+
+
+@user.post("/login/")
+async def login(model:UserLogin,
+                session:AsyncSession = Depends(get_async_session)):
+    user_data = await session.execute(select(User).where(User.username == model.username))
+    result = user_data.scalar_one_or_none()
+
+    if not result:
+        raise HTTPException(status_code=401 , detail="Invalid Username or Password!")
+
+    if not pwd_context.verify(model.password , result.password):
+        raise HTTPException(status_code=401, detail="Invalid Username or Password!")
+
+    token = generate_token(result.id)
+    return {"token":token,"username":result.username}

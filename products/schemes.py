@@ -10,6 +10,8 @@ class Product(BaseModel):
     price:float
     count:int
 
+
+
 class ProductUpdate(BaseModel):
     name:str
     description:str
@@ -17,3 +19,12 @@ class ProductUpdate(BaseModel):
     count:int
 
 
+class ProductSale(BaseModel):
+    product_id:int
+    discount:int
+    limit:int
+
+
+class ProductAddCategory(BaseModel):
+    product_id:int
+    category_id:int
